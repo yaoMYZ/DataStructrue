@@ -14,21 +14,21 @@ struct Student
 	char strSex[8];
 	char strStudentID[15];
 	char strBirthday[11];
-	char IfHealthy[5];
+	char Healthy[5];
 
 	Student(){
 		strcpy_s(strName, "0");
 		strcpy_s(strSex, "0");
 		strcpy_s(strStudentID, "0");
 		strcpy_s(strBirthday, "0");
-		strcpy_s(IfHealthy, "0");
+		strcpy_s(Healthy, "0");
 	}
-	Student & operator=(Student other){
+	Student & operator=(const Student other){
 		strcpy_s(strName, other.strName);
 		strcpy_s(strSex, other.strSex);
 		strcpy_s(strStudentID, other.strStudentID);
 		strcpy_s(strBirthday, other.strBirthday);
-		strcpy_s(IfHealthy, other.IfHealthy);
+		strcpy_s(Healthy, other.Healthy);
 		return *this;
 	}
 
@@ -50,7 +50,7 @@ ostream & operator<<(ostream & output, Student st){
 	cout << "性别：" << st.strSex << endl;
 	cout << "学号：" << st.strStudentID << endl;
 	cout << "生日：" << st.strBirthday << endl;
-	cout << "是否健康：" << st.IfHealthy << endl;
+	cout << "健康程度：" << st.Healthy << endl;
 	cout << endl << endl;
 	return output;
 }
@@ -65,12 +65,14 @@ istream & operator>>(istream & input, Student &st){//st must pass address
 	input >> st.strStudentID;
 	cout << "请输入生日（格式如：1998/10/8)：";
 	input >> st.strBirthday;
-	cout << "请输入健康状况（不健康输入0，健康输入非0字符）：";
+	cout << "请输入健康状况（优输入1，良输入2，差输入其他数字）：";
 	input >> judeHealth;
-	if (judeHealth == 0)
-		strcpy_s(st.IfHealthy, "否");
+	if (judeHealth == 1)
+		strcpy_s(st.Healthy, "优");
+	else if (judeHealth == 2)
+		strcpy_s(st.Healthy, "良");
 	else
-		strcpy_s(st.IfHealthy, "是");
+		strcpy_s(st.Healthy, "差");
 	cout << endl;
 	return input;
 }
@@ -80,15 +82,6 @@ class StudentHealth{
 private:
 	List<Student> SHlist;
 	int Length;
-	//void JudeIfOverflow(){
-	//	if (Length >= MaxSize){//Jude data overflow
-	//		Student *newList = new Student[MaxSize * 2];//To apply for a bigger array
-	//		memmove(newList, SHlist, sizeof(Student)*MaxSize);
-	//		MaxSize *= 2;
-	//		delete[] SHlist;
-	//		SHlist = newList;//variable SHlist point to the variable newList
-	//	}
-	//}
 
 	//jude if the length of the array overflow
 	bool IfLenOutOfRange(char a[]){
@@ -108,7 +101,7 @@ private:
 		int left1 = left - 1;
 		for (int moveleft = left; moveleft<right; moveleft++)
 		{
-			if (a[moveleft].strStudentID<x.strStudentID)
+			if (a[moveleft]<x)
 			{
 				left1++;
 				Student temp = a[left1];
@@ -141,6 +134,7 @@ private:
 		}
 		write.close();
 	}
+
 	void Initial(){
 		ifstream read("Information.dat", ios::binary|ios::in);
 		int l, m;
@@ -234,6 +228,7 @@ public:
 	}
 
 	void CreateHealthList(){
+		SHlist.Clear();
 		cout << "请输入学生人数：";
 		int number = 0;
 		cin >> number;
@@ -244,7 +239,6 @@ public:
 			Length++;
 		}
 		Write();
-		cout << "输入结束！" << endl;
 		system("pause");
 		Menu();
 	}
@@ -253,6 +247,15 @@ public:
 	void AddStudent(){
 		Student temp;
 		cin >> temp;
+		for (int i = 1; i <= Length; i++){
+			Student s = SHlist.Member(i);
+			if (strcmp(s.strStudentID, temp.strStudentID) == 0){
+				cout << "输入的学号已存在，请重新输入！" << endl;
+				system("pause");
+				system("cls");
+				AddStudent();
+			}
+		}
 		SHlist.Push(temp);
 		Length++;
 		Write();
@@ -294,7 +297,9 @@ public:
 		if (!IfHaveID){
 			cout << "没有这学生，请重新输入！" << endl;
 			DeleteStudent();
-		}			
+		}else{
+			cout << "恭喜操作成功！" << endl;
+		}
 		system("pause");
 		Menu();
 	}
@@ -317,6 +322,8 @@ public:
 		if (!IfHaveID){
 			cout << "没有这学生，请重新输入！" << endl;
 			ChangeInformation();
+		}else{
+			cout << "恭喜操作成功！" << endl;
 		}
 		system("pause");
 		Menu();

@@ -4,22 +4,28 @@
 #include<iostream>
 using namespace std;
 
+template<class T>
+struct ListNode
+{
+	T m_Member;
+	ListNode<T> *m_Right=NULL;
+	ListNode<T> *m_Left=NULL;
+};
+
+
 template <class T>
 class List
 {
 private:
-	T m_Member;
-	List<T> *m_Head;
-	List<T> *m_Tail;
-	List<T> *m_Right;
-	List<T> *m_Left;
-
+	
+	ListNode<T>*m_Head;
+	ListNode<T>*m_Tail;
+	
 public:
 	List(){
-		m_Head = NULL;
-		m_Tail = NULL;
-		m_Right = NULL;
-		m_Left = NULL;
+		m_Head = new ListNode<T>;
+		m_Tail = m_Head;
+
 	}
 
 
@@ -33,20 +39,17 @@ public:
 	bool IsEmpty();
 	T &Member(int pos);
 	bool Replace(int pos, T member);
+	void Clear();
 };
 
 
 template <class T>//模板类的声明和定义一定要在同一文件中
 void List<T>::Push(T member)
 {
-	List<T> *tail, *temp;
-	temp = new List;
+	ListNode<T>*tail, *temp;
+	temp = new ListNode<T>;
 	temp->m_Member = member;
-	if (m_Head == NULL){
-		List<T> *head = new List;
-		m_Head = head;
 
-	}
 	tail = m_Head;
 	while (tail->m_Right != NULL)
 		tail = tail->m_Right;
@@ -59,7 +62,7 @@ void List<T>::Push(T member)
 
 template <class T>//模板类的声明和定义一定要在同一文件中
 void List<T>::Show(){
-	List<T> *p;
+	ListNode<T>*p;
 	p = m_Head->m_Right;
 	while (p != NULL){
 		cout << p->m_Member << " ";
@@ -72,7 +75,7 @@ void List<T>::Show(){
 
 template <class T>//模板类的声明和定义一定要在同一文件中
 void List<T>::Pop(){
-	List<T> *pop, tail;
+	ListNode<T>*pop, tail;
 	pop = m_Tail;
 	tail = pop->m_Left;
 	delete pop;
@@ -84,7 +87,7 @@ void List<T>::Pop(){
 
 template <class T>//模板类的声明和定义一定要在同一文件中  
 void List<T>::Reverse(){
-	List<T> *now, *p, *temp;
+	ListNode<T>*now, *p, *temp;
 	now = m_Head->m_Right;
 	p = now->m_Right;
 	now->m_Right = NULL;
@@ -108,7 +111,7 @@ bool List<T>::Insert(int number, T member){
 	int len = Length();
 	if (number<1 || number>len + 1) return false;
 
-	List<T> *newNode = new List;//create an new node
+	ListNode<T>*newNode = new ListNode<T>;//create an new node
 	newNode->m_Member = member;
 
 	if (number == len + 1){//element insert in the end of the list
@@ -119,14 +122,14 @@ bool List<T>::Insert(int number, T member){
 		return true;
 	}
 
-	List<T> *p = m_Head;
+	ListNode<T>*p = m_Head;
 
 	int i = 1;
 	while (i<number){
 		p = p->m_Right;
 		i++;
 	}
-	List<T> *pRight = p->m_Right;
+	ListNode<T>*pRight = p->m_Right;
 
 	p->m_Right = newNode;
 	newNode->m_Left = p;
@@ -146,7 +149,7 @@ bool List<T>::Delete(int pos){
 		return false;
 	}
 
-	List<T> *del = NULL;
+	ListNode<T>*del = NULL;
 	if (pos == len){//when delete the final element in the list 
 		del = m_Tail;
 		m_Tail = del->m_Left;
@@ -155,7 +158,7 @@ bool List<T>::Delete(int pos){
 		return true;
 	}
 
-	List<T> *p = m_Head;
+	ListNode<T>*p = m_Head;
 	for (int i = 1; i < pos; i++){
 		p = p->m_Right;
 	}
@@ -169,7 +172,7 @@ bool List<T>::Delete(int pos){
 template <class T>//模板类的声明和定义一定要在同一文件中
 int List<T>::Length(){
 	int len = 0;
-	List<T> *p = m_Head;
+	ListNode<T>*p = m_Head;
 	while (p->m_Right != NULL){
 		p = p->m_Right;
 		len++;
@@ -179,7 +182,7 @@ int List<T>::Length(){
 
 template<class T>
 bool List<T>::IsEmpty(){
-	if (m_Head == NULL)
+	if (m_Head->m_Right == NULL)
 		return true;
 	else
 		return false;
@@ -191,7 +194,7 @@ T & List<T>::Member(int pos){
 		cout << "out of range!" << endl;
 		exit(0);
 	}
-	List<T> *p = m_Head;
+	ListNode<T>*p = m_Head;
 	for (int i = 0; i < pos; i++){
 		p = p->m_Right;
 	}
@@ -208,5 +211,17 @@ bool List<T>::Replace(int pos, T member){
 
 	Member(pos) = member;
 	return true;
+}
+
+template<class T>
+void List<T>::Clear(){
+	ListNode<T>*p = m_Head->m_Right;
+	while (p != NULL){
+		ListNode<T> *del = p;
+		p = p->m_Right;
+		delete del;
+	}
+	m_Tail = m_Head;
+	m_Tail->m_Right = NULL;
 }
 #endif
