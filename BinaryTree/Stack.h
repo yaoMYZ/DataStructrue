@@ -90,9 +90,9 @@ T Stack<T>::GetTop(){
 template<class T>
 bool Stack<T>::IsEmpty(){
 	if (top == NULL){
-		return false;
+		return true;
 	}
 	else
-		return true;
+		return false;
 }
 #endif

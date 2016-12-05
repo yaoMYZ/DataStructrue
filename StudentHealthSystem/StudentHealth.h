@@ -133,6 +133,7 @@ private:
 			write.write((char*)&SHlist.Member(i), sizeof(Student));
 		}
 		write.close();
+		return;
 	}
 
 	void Initial(){
@@ -165,6 +166,7 @@ public:
 
 	void Menu(){
 		system("cls");
+		Write();//Before doing some operations, write the data into the file
 		int choose = 0;
 		cout << "-----------------------------学生健康管理系统-----------------------------" << endl;
 		cout << "                  按1新建学生健康表" << endl;
@@ -187,34 +189,42 @@ public:
 		case 1:
 			system("cls");
 			CreateHealthList();
+			Menu();
 			break;
 		case 2:
 			system("cls");
 			AddStudent();
+			Menu();
 			break;
 		case 3:
 			system("cls");
 			InsertStudent();
+			Menu();
 			break;
 		case 4:
 			system("cls");
 			DeleteStudent();
+			Menu();
 			break;
 		case 5:
 			system("cls");
 			ChangeInformation();
+			Menu();
 			break;
 		case 6:
 			system("cls");
 			ShowInformationByID();
+			Menu();
 			break;
 		case 7:
 			system("cls");
 			FindStudent();
+			Menu();
 			break;
 		case 8:
 			system("cls");
 			ShowStudentInformation();
+			Menu();
 			break;
 		case 9:
 			Menu();
@@ -228,7 +238,9 @@ public:
 	}
 
 	void CreateHealthList(){
+		//clear the List
 		SHlist.Clear();
+		Length = 0;
 		cout << "请输入学生人数：";
 		int number = 0;
 		cin >> number;
@@ -238,9 +250,8 @@ public:
 			SHlist.Push(temp);
 			Length++;
 		}
-		Write();
 		system("pause");
-		Menu();
+		Write();
 	}
 
 
@@ -260,7 +271,6 @@ public:
 		Length++;
 		Write();
 		system("pause");
-		Menu();
 	}
 
 	void InsertStudent(){
@@ -277,7 +287,6 @@ public:
 		Length++;
 		Write();
 		system("pause");
-		Menu();
 	}
 
 	void DeleteStudent(){
@@ -301,7 +310,6 @@ public:
 			cout << "恭喜操作成功！" << endl;
 		}
 		system("pause");
-		Menu();
 	}
 
 	void ChangeInformation(){
@@ -326,7 +334,6 @@ public:
 			cout << "恭喜操作成功！" << endl;
 		}
 		system("pause");
-		Menu();
 	}
 
 	void ShowStudentInformation(){
@@ -334,7 +341,6 @@ public:
 			cout << SHlist.Member(i);
 		}
 		system("pause");
-		Menu();
 	}
 
 	void FindStudent(){
@@ -354,7 +360,6 @@ public:
 			FindStudent();
 		}
 		system("pause");
-		Menu();
 	}
 
 	void ShowInformationByID(){
@@ -367,7 +372,6 @@ public:
 		}
 		delete[] newList;
 		system("pause");
-		Menu();
 	}
 };
 
