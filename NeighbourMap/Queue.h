@@ -1,26 +1,26 @@
-#ifndef LIST
-#define LIST
+#ifndef QUEUE
+#define QUEUE
 
 #include<iostream>
 using namespace std;
 
 template<class T>
-struct  ListNode
+struct  QueueNode
 {
 	T m_Member;
-	ListNode<T> *Next = NULL;
+	QueueNode<T> *Next = NULL;
 };
 
 template <class T>
-class List
+class Queue
 {
 private:
-	ListNode<T> *m_Head;
-	ListNode<T> *m_Tail;
+	QueueNode<T> *m_Head;
+	QueueNode<T> *m_Tail;
 	int len;
 public:
-	List(){
-		m_Head = new ListNode<T>;
+	Queue(){
+		m_Head = new QueueNode<T>;
 		m_Tail = m_Head;
 		len = 0;
 	}
@@ -36,16 +36,18 @@ public:
 	bool IsEmpty();
 	T &Member(int pos);
 	bool Replace(int pos, T member);
+	T Top();
+	bool Pop();
 };
 
 
 template <class T>//模板类的声明和定义一定要在同一文件中
-void List<T>::Push(T member)
+void Queue<T>::Push(T member)
 {
-	ListNode<T> *temp;
-	temp = new ListNode<T>;
+	QueueNode<T> *temp;
+	temp = new QueueNode<T>;
 	temp->m_Member = member;
-	
+
 	m_Tail->Next = temp;
 	m_Tail = temp;
 
@@ -54,8 +56,8 @@ void List<T>::Push(T member)
 
 
 template <class T>//模板类的声明和定义一定要在同一文件中
-void List<T>::Show(){
-	ListNode<T> *p;
+void Queue<T>::Show(){
+	QueueNode<T> *p;
 	p = m_Head->Next;
 	while (p != NULL){
 		cout << p->m_Member << " ";
@@ -67,16 +69,16 @@ void List<T>::Show(){
 
 
 template <class T>//模板类的声明和定义一定要在同一文件中  
-bool List<T>::Reverse(){
+bool Queue<T>::Reverse(){
 	if (len < 2){
 		cout << "There are not enough elements" << endl;
 		return false;
 	}
 
-	ListNode<T> *now, *p, *temp;
+	QueueNode<T> *now, *p, *temp;
 	now = m_Head->Next;
 	p = now->Next;
-	now->Next =NULL;//reset the final element's Next
+	now->Next = NULL;//reset the final element's Next
 
 	while (p != NULL){
 		temp = p;
@@ -93,20 +95,26 @@ bool List<T>::Reverse(){
 
 
 template <class T>//模板类的声明和定义一定要在同一文件中  
-bool List<T>::Insert(int number, T member){
+bool Queue<T>::Insert(int number, T member){
 	if (number<1 || number>len + 1) return false;
 
-	ListNode<T> *newNode = new ListNode<T>;//create an new node
+	QueueNode<T> *newNode = new QueueNode<T>;//create an new node
 	newNode->m_Member = member;
+	//插入到队列尾部时
+	if (number == len){
+		m_Tail->Next = newNode;
+		m_Tail = newNode;
+		return;
+	}
 
-	ListNode<T> *p = m_Head;
+	QueueNode<T> *p = m_Head;
 
 	int i = 1;
 	while (i<number){
 		p = p->Next;
 		i++;
 	}
-   
+
 	//insert the newNode
 	newNode->Next = p->Next;
 	p->Next = newNode;
@@ -116,7 +124,7 @@ bool List<T>::Insert(int number, T member){
 }
 
 template <class T>//模板类的声明和定义一定要在同一文件中
-bool List<T>::Delete(int pos){
+bool Queue<T>::Delete(int pos){
 	if (pos<1 || pos>len){
 		cout << "输入超界！" << endl;
 		return false;
@@ -126,10 +134,10 @@ bool List<T>::Delete(int pos){
 		return false;
 	}
 
-	ListNode<T> *del = NULL;
+	QueueNode<T> *del = NULL;
 
 	//search the element before the element that have to be deleted
-	ListNode<T> *p = m_Head;
+	QueueNode<T> *p = m_Head;
 	for (int i = 1; i < pos; i++){
 		p = p->Next;
 	}
@@ -147,17 +155,17 @@ bool List<T>::Delete(int pos){
 }
 
 template <class T>//模板类的声明和定义一定要在同一文件中
-bool List<T>::Remove(T member){
+bool Queue<T>::Remove(T member){
 	if (IsEmpty()){
 		cout << "队列为空！" << endl;
 		return false;
 	}
 
 	bool JudeExit = false;
-	ListNode<T>* p = m_Head;
-	while (p->Next!=NULL){
+	QueueNode<T>* p = m_Head;
+	while (p->Next != NULL){
 		if (p->Next->m_Member == member){
-			ListNode<T>* del = p->Next;
+			QueueNode<T>* del = p->Next;
 			p->Next = del->Next;
 			delete del;
 
@@ -175,12 +183,12 @@ bool List<T>::Remove(T member){
 }
 
 template <class T>//模板类的声明和定义一定要在同一文件中
-int List<T>::Length(){
+int Queue<T>::Length(){
 	return len;
 }
 
 template<class T>
-bool List<T>::IsEmpty(){
+bool Queue<T>::IsEmpty(){
 	if (m_Head->Next == NULL)
 		return true;
 	else
@@ -188,12 +196,12 @@ bool List<T>::IsEmpty(){
 }
 
 template<class T>
-T & List<T>::Member(int pos){
+T & Queue<T>::Member(int pos){
 	if (pos > len) {
 		cout << "out of range!" << endl;
 		exit(0);
 	}
-	ListNode<T> *p = m_Head;
+	QueueNode<T> *p = m_Head;
 	for (int i = 0; i < pos; i++){
 		p = p->Next;
 	}
@@ -201,7 +209,7 @@ T & List<T>::Member(int pos){
 }
 
 template<class T>
-bool List<T>::Replace(int pos, T member){
+bool Queue<T>::Replace(int pos, T member){
 	if (pos<1 || pos>len){
 		cout << "输入超界！" << endl;
 		return false;
@@ -209,5 +217,22 @@ bool List<T>::Replace(int pos, T member){
 
 	Member(pos) = member;
 	return true;
+}
+
+template<class T>
+T Queue<T>::Top(){
+	try{
+		if (IsEmpty())
+			throw "队列为空！";
+	}
+	catch (char *a){
+		cout << a << endl;
+	}
+	return m_Head->Next->m_Member;
+}
+
+template<class T>
+bool Queue<T>::Pop(){
+	return Delete(1);
 }
 #endif
