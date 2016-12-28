@@ -3,7 +3,18 @@
 
 #define Max 2147483647
 #include"Queue.h"
+#include<queue>
 using namespace std;
+
+struct ForMST{
+	int from = -1;
+	int index = -1;
+	int weight = Max;
+};
+
+bool operator <(const ForMST &f1, const ForMST &f2){
+	return f1.weight > f2.weight;
+}
 
 template<class V>
 class NeighbourMatric{
@@ -29,6 +40,7 @@ public:
 	void BFS();
 	void DFS();
 	void Print();
+	ForMST* MinSpanTree();
 };
 
 
@@ -59,6 +71,8 @@ void NeighbourMatric<V>::Create(){
 		cin >> x >> y;
 		cout << "请输入("<<x<<","<<y<<")的权重：" << endl;
 		cin >> Edges[x][y];
+		//该图为无向图
+		Edges[y][x] = Edges[x][y];
 	}
 }
 
@@ -124,5 +138,66 @@ void NeighbourMatric<V>::DFS(int index){
 				DFS(i);
 		}
 	}
+	//访问符号复原
+	for (int i = 0; i < VertexNumber; i++){
+		Edges[i][i] = Max;
+	}
+}
+
+template<class V>
+ForMST* NeighbourMatric<V>::MinSpanTree(){
+	int count = 0;
+
+	ForMST *mst=new ForMST [VertexNumber];
+	//对优先队列初始化赋值
+	priority_queue<ForMST*> pq;
+	for (size_t i = 0; i < VertexNumber; i++)	{
+		if (Edges[0][i] != Max){
+			mst[i].from = 0;
+			mst[i].index = i;
+			mst[i].weight = Edges[0][i];
+			pq.push(&mst[i]);
+		}
+	}
+	//设置访问标志
+	Edges[0][0] = 0;
+	count++;
+	while (count < VertexNumber){
+		//取出权重最小节点
+		ForMST *temp = pq.top();
+		pq.pop();
+		int index = temp->index;
+
+		//更新边集
+		if (Edges[index][index] != 0){//该点必须没访问过
+			for (size_t i = 0; i < VertexNumber; i++){
+				if (Edges[index][i] != Max&&Edges[i][i]!=0){//要操作的点必须没被访问过
+					if (mst[i].weight != Max){
+						//边集中通向该点的边已存在
+						if (mst[i].weight>Edges[index][i]){
+							mst[i].from = index;
+							mst[i].weight = Edges[index][i];
+						}
+					}
+					else{
+						//边集中通向该点的边不存在
+						mst[i].from = index;
+						mst[i].index = i;
+						mst[i].weight = Edges[index][i];
+						pq.push(&mst[i]);
+					}
+				}
+			}
+			//访问节点加1
+			count++;
+			Edges[index][index] = 0;
+		}
+	}
+
+	for (size_t i = 0; i < VertexNumber; i++){
+		if (mst[i].weight!=Max)
+		cout << Vertex[mst[i].from] << " " << mst[i].weight << " " << Vertex[mst[i].index] << endl;
+	}
+	return mst;
 }
 #endif

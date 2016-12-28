@@ -3,6 +3,7 @@
 
 #include"Queue.h"
 #include<iostream>
+#include<queue>
 using namespace std;
 
 struct EdgeNode{
@@ -16,6 +17,35 @@ struct VertexNode{
 	T Data;
 	EdgeNode *Next = NULL;
 };
+
+
+struct EdgeInfor{
+	int from;
+	int to;
+	int weight;
+	EdgeInfor(){
+		from = 0;
+		to = 0;
+		weight = 0;
+	}
+	EdgeInfor(int f = 0, int t = 0, int w = 0){
+		from = f;
+		to = t;
+		weight = w;
+	}
+
+	EdgeInfor& operator =(const  EdgeInfor &f2){
+		from = f2.from;
+		to = f2.to;
+		weight = f2.weight;
+		return *this;
+	}
+};
+
+bool operator <(const  EdgeInfor &f1, const  EdgeInfor &f2){
+	return f1.weight > f2.weight;
+}
+
 
 
 template<class T>
@@ -41,6 +71,7 @@ public:
 	void Create();
 	void DFS();
 	void BFS();
+	EdgeInfor* MinSpanTree();
 };
 
 
@@ -120,5 +151,39 @@ void NeighbourList<T>::DFS(int index){
 			temp = temp->next;
 		}
 	}
+}
+
+
+template<class V>
+EdgeInfor* NeighbourList<V>::MinSpanTree(){
+	priority_queue<EdgeInfor> pq;
+	memset(Visit, false, VertexNumber);
+	int count = 0;
+	//把所有边放入优先队列中
+	for (int i = 0; i < EdgeNumber; i++){
+		EdgeNode *temp = Vertex[i].Next;
+		while (temp != NULL){
+			EdgeInfor EI = { i, temp->index, temp->weight };
+			pq.push(EI);
+			temp = temp->next;
+		}
+	}
+	//处理边
+	EdgeInfor *forReturn=new EdgeInfor[VertexNumber];
+	while (count < EdgeNumber){
+		EdgeInfor temp = pq.top();
+		pq.pop();
+		if (!Visit[temp.from] && !Visit[temp.to]){
+			forReturn[count] = temp;
+			Visit[temp.from] = true;
+			Visit[temp.to] = true;
+			count++;
+		}
+	}
+	//显示
+	for (size_t i = 0; i < count; i++){
+		cout << Vertex[forReturn[i].from].Data << " " << forReturn[i].weight << " " << Vertex[forReturn[i].to].Data << endl;
+	}
+	return forReturn;
 }
 #endif
